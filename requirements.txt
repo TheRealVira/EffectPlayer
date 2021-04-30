@@ -1,2 +1,1 @@
-python-vlc>=3.0.12118
-tk
+python-vlc

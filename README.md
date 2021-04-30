@@ -5,6 +5,8 @@ A nice effect player for some digital DnD 🐉🎲
 Simple run the following line of code to install all dependencies:
 
 	pip instsall -r requirements.txt
+	
+`python-tk` is also needed!
 
 ## Running the application
 To run the application just type the following command:
