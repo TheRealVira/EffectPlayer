@@ -33,6 +33,7 @@ for filename in os.listdir(music_folder):
 # Effect Event
 def effectSelectionChanged(event):
     selection = lb_effects.curselection()
+    media_player_effects.stop()
     if selection:
         current_effects_media = vlc.Media(os.path.join(effects_folder, event.widget.get(selection[0])))
         media_player_effects.set_media(current_effects_media)
@@ -41,6 +42,7 @@ def effectSelectionChanged(event):
 # Music Event
 def musicSelectionChanged(event):
     selection = lb_music.curselection()
+    media_player_music.stop()
     if selection:
         current_music_media = player_music.media_new(os.path.join(music_folder, event.widget.get(selection[0])))
         music_media_list = player_music.media_list_new()
