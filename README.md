@@ -14,3 +14,5 @@ To run the application just type the following command:
 	python main.py
 
 That's it! Be sure to put all your effects inside `./Input/Effects` and all your music files into `./Input/Music` and restart the application to refresh all lists.
+
+Everything inside Music is looped, everything inside Effects is not.
