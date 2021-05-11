@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import vlc, os, time
 from tkinter import *
 
@@ -22,11 +23,11 @@ lb_effects = Listbox(window, font=global_font, exportselection = False)
 lb_music = Listbox(window, font=global_font, exportselection = False)
 
 # Effects
-for filename in os.listdir(effects_folder):
+for filename in sorted(os.listdir(effects_folder)):
     lb_effects.insert(END, filename)
 
 # Music
-for filename in os.listdir(music_folder):
+for filename in sorted(os.listdir(music_folder)):
     lb_music.insert(END, filename)
     
 # Events
