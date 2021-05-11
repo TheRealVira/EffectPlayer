@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import vlc, os, time
 from tkinter import *
 
