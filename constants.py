@@ -9,5 +9,5 @@ EFFECTS_FOLDER = "Input/Effects"
 MUSIC_FOLDER = "Input/Music"
 
 # Geometry
-MAIN_WINDOW = "300x1000+10+20"
-MACRO_PROMPT = "200x200"
+PAD_X = 10
+PAD_Y = 5

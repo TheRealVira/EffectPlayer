@@ -1,5 +1,9 @@
 """A nice effect player for some digital DnD 🐉🎲"""
 from tkinter import *
+import threading
+import time
+import os
+import vlc
 from macro_prompt import MacroPrompt
 from sound_entity import SoundEntity
 from constants import (
@@ -8,18 +12,26 @@ from constants import (
     COPYRIGHT_FONT,
     GLOBAL_FONT,
     HEADER_FONT,
-    MAIN_WINDOW,
+    PAD_X,
+    PAD_Y,
 )
-import os
-import vlc
 
 # Constant instances
+vlc.Instance()
 media_player_effects = vlc.MediaPlayer()
 player_music = vlc.Instance("--input-repeat=999999")
 media_player_music = player_music.media_list_player_new()
 
+ROW = -1
+
 effect_entities = []
 music_entities = []
+
+
+def get_row():
+    """Returns incremental row."""
+    global ROW
+    return (ROW := ROW + 1)
 
 
 def insert_music(list_box, folder):
@@ -34,37 +46,74 @@ def insert_music(list_box, folder):
     return entitycollection
 
 
-def effect_selection_changed(event = None):
+def effect_selection_changed(event=None):
     """Eventhandler for Effect change."""
     selection = lb_effects.curselection()
-    media_player_effects.stop()
-    if selection:
-        current_effects_media = vlc.Media(
-            os.path.join(EFFECTS_FOLDER, effect_entities[selection[0]].get_file())
+    if selection and effect_entities[selection[0]].display() is not selection:
+        thread = threading.Thread(target=change_effect)
+        thread.start()
+
+
+def change_effect():
+    """Effect change."""
+    selection = lb_effects.curselection()
+    while media_player_effects.audio_get_volume() > 0:
+        media_player_effects.audio_set_volume(
+            media_player_effects.audio_get_volume() - 1
         )
-        media_player_effects.set_media(current_effects_media)
-        media_player_effects.play()
+        time.sleep(0.005)
+    media_player_effects.stop()
+    current_effects_media = vlc.Media(
+        os.path.join(EFFECTS_FOLDER, effect_entities[selection[0]].get_file())
+    )
+    media_player_effects.set_media(current_effects_media)
+    media_player_effects.play()
+    while media_player_effects.audio_get_volume() < s_volume.get():
+        media_player_effects.audio_set_volume(
+            media_player_effects.audio_get_volume() + 1
+        )
+        time.sleep(0.005)
+
+    media_player_effects.audio_set_volume(s_volume.get())
 
 
-def music_selection_changed(event = None):
+def music_selection_changed(event=None):
     """Eventhandler for Music change."""
     selection = lb_music.curselection()
-    media_player_music.stop()
-    if selection:
-        current_music_media = player_music.media_new(
-            os.path.join(MUSIC_FOLDER, music_entities[selection[0]].get_file())
-        )
-        music_media_list = player_music.media_list_new()
-        music_media_list.add_media(current_music_media)
+    if selection and music_entities[selection[0]].display() is not selection:
+        thread = threading.Thread(target=change_music)
+        thread.start()
 
-        media_player_music.set_media_list(music_media_list)
-        media_player_music.play()
+
+def change_music():
+    """Music change."""
+    selection = lb_music.curselection()
+    while media_player_music.get_media_player().audio_get_volume() > 0:
+        media_player_music.get_media_player().audio_set_volume(
+            media_player_music.get_media_player().audio_get_volume() - 1
+        )
+        time.sleep(0.005)
+    media_player_music.stop()
+    current_music_media = player_music.media_new(
+        os.path.join(MUSIC_FOLDER, music_entities[selection[0]].get_file())
+    )
+    music_media_list = player_music.media_list_new()
+    music_media_list.add_media(current_music_media)
+
+    media_player_music.set_media_list(music_media_list)
+    media_player_music.play()
+    while media_player_music.get_media_player().audio_get_volume() < s_volume.get():
+        media_player_music.get_media_player().audio_set_volume(
+            media_player_music.get_media_player().audio_get_volume() + 1
+        )
+        time.sleep(0.005)
+
+    media_player_music.get_media_player().audio_set_volume(s_volume.get())
 
 
 def effect_macro_change(event):
     """Update macro for current effect."""
     selection = lb_effects.curselection()
-    print("selection")
     if selection:
         new_macro = MacroPrompt().ask(event.widget.get(selection[0]))
         if new_macro:
@@ -107,7 +156,6 @@ def macro_focus(macro, entities, listbox, func):
 
 def keyboard_event(event):
     """Eventhandler for keyboard macros."""
-    print(event.char)
     macro_focus(event.char, effect_entities, lb_effects, effect_selection_changed)
     macro_focus(event.char, music_entities, lb_music, music_selection_changed)
 
@@ -117,23 +165,35 @@ if __name__ == "__main__":
 
     # Window settings
     window.title("EffectPlayer")
-    window.geometry(MAIN_WINDOW)
+    window.columnconfigure(0, weight=1)
+    window.grid_rowconfigure(0, weight=1)
     window.bind("<KeyPress>", keyboard_event)
 
+    Label(window, font=HEADER_FONT, text="EffectPlayer").grid(
+        row=get_row(), column=0, sticky="NEWS"
+    )
+
+    # Frames
+    effect_frame = LabelFrame(window, text="Effects:")
+    music_frame = LabelFrame(window, text="Music:")
+    volume_frame = LabelFrame(window, text="Volume:")
+
+    # Frame grid config
+    volume_frame.grid(row=get_row(), columnspan=3, sticky="NEW", padx=PAD_X, pady=PAD_Y)
+    volume_frame.grid_rowconfigure(0, weight=1)
+    volume_frame.grid_columnconfigure(0, weight=1)
+    effect_frame.grid(
+        row=get_row(), columnspan=3, sticky="NEWS", padx=PAD_X, pady=PAD_Y
+    )
+    effect_frame.grid_rowconfigure(0, weight=1)
+    effect_frame.grid_columnconfigure(0, weight=1)
+    music_frame.grid(row=get_row(), columnspan=3, sticky="NEWS", padx=PAD_X, pady=PAD_Y)
+    music_frame.grid_rowconfigure(0, weight=1)
+    music_frame.grid_columnconfigure(0, weight=1)
+
     # Widgets
-    lb_effects = Listbox(window, font=GLOBAL_FONT, exportselection=False)
-    lb_music = Listbox(window, font=GLOBAL_FONT, exportselection=False)
-
-    # Load data
-    effect_entities = insert_music(lb_effects, EFFECTS_FOLDER)
-    music_entities = insert_music(lb_music, MUSIC_FOLDER)
-
-    # Ready window
-    Label(window, font=HEADER_FONT, text="EffectPlayer").pack(fill="x")
-    Frame(window, height=1, bg="black").pack(fill="x")
-    Label(window, font=GLOBAL_FONT, text="Volume:", anchor="w").pack(fill="x")
     s_volume = Scale(
-        window,
+        volume_frame,
         font=GLOBAL_FONT,
         from_=0,
         to=100,
@@ -141,20 +201,28 @@ if __name__ == "__main__":
         command=update_volume,
     )
     s_volume.set(100)
-    s_volume.pack(fill="x")
-    Frame(window, height=1, bg="black").pack(fill="x")
-    Label(window, font=GLOBAL_FONT, text="Effects:", anchor="w").pack(fill="x")
+    s_volume.grid(row=0, column=0, sticky="NEWS")
+
+    lb_effects = Listbox(effect_frame, font=GLOBAL_FONT, exportselection=False)
     lb_effects.bind("<<ListboxSelect>>", effect_selection_changed)
     lb_effects.bind("<Control-Button-1>", effect_macro_change)
-    lb_effects.pack(fill="both", expand=True)
-    Label(window, font=GLOBAL_FONT, text="Music:", anchor="w").pack(fill="x")
+    lb_effects.grid(column=0, row=0, sticky="NEWS")
+
+    lb_music = Listbox(music_frame, font=GLOBAL_FONT, exportselection=False)
     lb_music.bind("<<ListboxSelect>>", music_selection_changed)
     lb_music.bind("<Control-Button-1>", music_macro_change)
-    lb_music.pack(fill="both", expand=True)
-    Button(window, font=GLOBAL_FONT, text="STOP", command=stop_everything).pack(
-        fill="both", expand=True
+    lb_music.grid(column=0, row=0, sticky="NEWS")
+
+    # Load data
+    effect_entities = insert_music(lb_effects, EFFECTS_FOLDER)
+    music_entities = insert_music(lb_music, MUSIC_FOLDER)
+
+    Button(window, font=GLOBAL_FONT, text="STOP", command=stop_everything).grid(
+        row=get_row(), columnspan=2, sticky="EWS", padx=PAD_X, pady=PAD_Y
     )
-    Label(window, font=COPYRIGHT_FONT, text="Made by Vira", anchor="e").pack(fill="x")
+    Label(window, font=COPYRIGHT_FONT, text="Made by Vira").grid(
+        row=ROW, column=2, sticky="EWS", padx=PAD_X, pady=PAD_Y
+    )
 
     # Start
     window.mainloop()
