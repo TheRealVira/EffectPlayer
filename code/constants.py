@@ -14,3 +14,4 @@ PAD_Y = 5
 
 # Other
 FADING_SLEEP_TIME = 0.005
+THEME="yaru"

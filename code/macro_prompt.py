@@ -1,21 +1,22 @@
 """A prompt for keyboard macros"""
-from code.constants import GLOBAL_FONT, PAD_X, PAD_Y
-from tkinter import *
-
+from code.constants import PAD_X, PAD_Y
+import tkinter as tk
+from tkinter import ttk
+from ttkthemes import ThemedTk
 
 class MacroPrompt:
     """A prompt class for keyboard macros"""
 
     def __init__(self):
         """Initializes new prompt"""
-        self.prompt = Toplevel()
+        self.prompt = tk.Toplevel()
         self.to_return = '""'
         self.row = -1
         self.prompt.bind("<KeyPress>", self.keyboard_event)
-        self.input_display = LabelFrame(
-            self.prompt, text="Input:", padx=PAD_X, pady=PAD_Y
+        self.input_display = ttk.LabelFrame(
+            self.prompt, text="Input:"
         )
-        self.macro_label = Label(self.input_display, font=GLOBAL_FONT, text="")
+        self.macro_label = ttk.Label(self.input_display, text="")
 
     def get_row(self):
         """Returns incremental row."""
@@ -34,11 +35,11 @@ class MacroPrompt:
             column=self.get_row(), sticky="NEWS", padx=PAD_X, pady=PAD_Y
         )
 
-        Label(self.prompt, font=GLOBAL_FONT, text=f"Macro for: {prompt_text}").grid(
+        ttk.Label(self.prompt, text=f"Macro for: {prompt_text}").grid(
             row=self.get_row(), sticky="NEWS", padx=PAD_X, pady=PAD_Y
         )
         self.macro_label.grid(row=0, column=0, sticky="NEWS")
-        Button(self.prompt, text="Accept", command=self.accept_button_event).grid(
+        ttk.Button(self.prompt, text="Accept", command=self.accept_button_event).grid(
             row=self.get_row(),
             column=0,
             sticky="NEWS",

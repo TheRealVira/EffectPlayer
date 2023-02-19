@@ -1,5 +1,7 @@
 """A nice effect player for some digital DnD 🐉🎲"""
-from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+from ttkthemes import ThemedTk
 from code.sound_manager import SoundManager
 from code.constants import (
     EFFECTS_FOLDER,
@@ -9,6 +11,7 @@ from code.constants import (
     HEADER_FONT,
     PAD_X,
     PAD_Y,
+    THEME
 )
 
 ROW = -1
@@ -34,15 +37,19 @@ def stop_everything():
 
 
 if __name__ == "__main__":
-    window = Tk()
-
     # Window settings
+    window = ThemedTk(theme='yaru')
     window.title("EffectPlayer")
     window.columnconfigure(0, weight=1)
+    window.resizable(False, False)
     window.grid_rowconfigure(0, weight=1)
     window.bind("<KeyPress>", keyboard_event)
 
-    Label(window, font=HEADER_FONT, text="EffectPlayer").grid(
+    # Style
+    style = ttk.Style(window)
+    style.theme_use(THEME)
+
+    ttk.Label(window, font=HEADER_FONT, text="EffectPlayer").grid(
         row=get_row(), column=0, sticky="NEWS"
     )
 
@@ -69,12 +76,13 @@ if __name__ == "__main__":
     music_manager.insert_sound()
     sound_managers.append(music_manager)
 
-    Button(window, font=GLOBAL_FONT, text="STOP", command=stop_everything).grid(
+    ttk.Button(window, text="STOP", command=stop_everything).grid(
         row=get_row(), columnspan=2, sticky="EWS", padx=PAD_X, pady=PAD_Y
     )
-    Label(window, font=COPYRIGHT_FONT, text="Made by Vira").grid(
+    ttk.Label(window, text="Made by Vira").grid(
         row=ROW, column=2, sticky="EWS", padx=PAD_X, pady=PAD_Y
     )
+    
 
     # Start
     window.mainloop()
