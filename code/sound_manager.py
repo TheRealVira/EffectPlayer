@@ -1,22 +1,22 @@
 import os
 import threading
 import vlc
+import time
 from tkinter import *
 from code.sound_entity import SoundEntity
 from code.macro_prompt import MacroPrompt
-from abc import ABC, abstractmethod
 from code.constants import (
     GLOBAL_FONT,
     PAD_X,
     PAD_Y,
 )
 
-class SoundManager(ABC):
-    @abstractmethod
-    def __init__(self, frame, folder, title, row, column, columnspan):
+class SoundManager():
+    def __init__(self, frame, folder, title, row, column, columnspan, vlc_params=""):
         self.entities = []
         self.folder = folder
-        self.media_player = vlc.MediaPlayer()
+        self.player_music = vlc.Instance(vlc_params)
+        self.media_player = self.player_music.media_list_player_new()
 
         self.frame = LabelFrame(frame, text=title)
         self.frame.grid(row=row, column=column, columnspan=columnspan, sticky="NEWS", padx=PAD_X, pady=PAD_Y)
@@ -81,6 +81,27 @@ class SoundManager(ABC):
         self.list_box.selection_clear(0, "end")
         self.media_player.stop()
 
-    @abstractmethod
     def change_media(self):
-        pass
+        """Music change."""
+        selection = self.list_box.curselection()
+        while self.media_player.get_media_player().audio_get_volume() > 0:
+            self.media_player.get_media_player().audio_set_volume(
+                self.media_player.get_media_player().audio_get_volume() - 1
+            )
+            time.sleep(0.005)
+        self.media_player.stop()
+        current_music_media = self.player_music.media_new(
+            os.path.join(self.folder, self.entities[selection[0]].get_file())
+        )
+        music_media_list = self.player_music.media_list_new()
+        music_media_list.add_media(current_music_media)
+
+        self.media_player.set_media_list(music_media_list)
+        self.media_player.play()
+        while self.media_player.get_media_player().audio_get_volume() < self.s_volume.get():
+            self.media_player.get_media_player().audio_set_volume(
+                self.media_player.get_media_player().audio_get_volume() + 1
+            )
+            time.sleep(0.005)
+
+        self.media_player.get_media_player().audio_set_volume(self.s_volume.get())

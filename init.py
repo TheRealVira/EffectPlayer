@@ -1,7 +1,6 @@
 """A nice effect player for some digital DnD 🐉🎲"""
 from tkinter import *
-from code.music_manager import MusicManager
-from code.effect_manager import EffectManager
+from code.sound_manager import SoundManager
 from code.constants import (
     EFFECTS_FOLDER,
     MUSIC_FOLDER,
@@ -41,11 +40,11 @@ if __name__ == "__main__":
         row=get_row(), column=0, sticky="NEWS"
     )
 
-    effect_manager = EffectManager(frame=window, folder= EFFECTS_FOLDER,row=get_row(), column=0, columnspan=3)
+    effect_manager = SoundManager(frame=window, folder= EFFECTS_FOLDER,row=get_row(), column=0, columnspan=3, title="Effects:")
     effect_manager.insert_sound()
     sound_managers.append(effect_manager)
 
-    music_manager = MusicManager(frame=window, folder= MUSIC_FOLDER,row=get_row(), column=0, columnspan=3)
+    music_manager = SoundManager(frame=window, folder= MUSIC_FOLDER,row=get_row(), column=0, columnspan=3, title="Music:", vlc_params="--input-repeat=999999")
     music_manager.insert_sound()
     sound_managers.append(music_manager)
 
