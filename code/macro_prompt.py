@@ -1,5 +1,5 @@
 """A prompt for keyboard macros"""
-from constants import GLOBAL_FONT, PAD_X, PAD_Y
+from code.constants import GLOBAL_FONT, PAD_X, PAD_Y
 from tkinter import *
 
 
