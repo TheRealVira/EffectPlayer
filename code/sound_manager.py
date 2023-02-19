@@ -1,7 +1,8 @@
+"""A sound manager for effects and music."""
 import os
 import threading
-import vlc
 import time
+import vlc
 from tkinter import *
 from code.sound_entity import SoundEntity
 from code.macro_prompt import MacroPrompt
@@ -9,9 +10,13 @@ from code.constants import (
     GLOBAL_FONT,
     PAD_X,
     PAD_Y,
+    FADING_SLEEP_TIME,
 )
 
-class SoundManager():
+
+class SoundManager:
+    """A class wrapping vlc media player."""
+
     def __init__(self, frame, folder, title, row, column, columnspan, vlc_params=""):
         self.entities = []
         self.folder = folder
@@ -19,7 +24,14 @@ class SoundManager():
         self.media_player = self.player_music.media_list_player_new()
 
         self.frame = LabelFrame(frame, text=title)
-        self.frame.grid(row=row, column=column, columnspan=columnspan, sticky="NEWS", padx=PAD_X, pady=PAD_Y)
+        self.frame.grid(
+            row=row,
+            column=column,
+            columnspan=columnspan,
+            sticky="NEWS",
+            padx=PAD_X,
+            pady=PAD_Y,
+        )
         self.frame.grid_rowconfigure(0, weight=1)
         self.frame.grid_columnconfigure(0, weight=1)
 
@@ -30,7 +42,7 @@ class SoundManager():
             from_=0,
             to=100,
             orient=HORIZONTAL,
-            #command=update_volume,
+            command=self.update_volume,
         )
         self.s_volume.set(100)
         self.s_volume.grid(row=0, column=0, sticky="NEWS")
@@ -67,7 +79,8 @@ class SoundManager():
                 self.list_box.activate(i)
                 self.selection_event_handler()
 
-    def update_volume(self):
+    def update_volume(self, event):
+        """Update volume event handler."""
         self.media_player.get_media_player().audio_set_volume(self.s_volume.get())
 
     def selection_event_handler(self, event=None):
@@ -78,6 +91,7 @@ class SoundManager():
             thread.start()
 
     def stop_everything(self):
+        """Stop playing sounds and unselect everything in listbox."""
         self.list_box.selection_clear(0, "end")
         self.media_player.stop()
 
@@ -88,7 +102,7 @@ class SoundManager():
             self.media_player.get_media_player().audio_set_volume(
                 self.media_player.get_media_player().audio_get_volume() - 1
             )
-            time.sleep(0.005)
+            time.sleep(FADING_SLEEP_TIME)
         self.media_player.stop()
         current_music_media = self.player_music.media_new(
             os.path.join(self.folder, self.entities[selection[0]].get_file())
@@ -98,10 +112,13 @@ class SoundManager():
 
         self.media_player.set_media_list(music_media_list)
         self.media_player.play()
-        while self.media_player.get_media_player().audio_get_volume() < self.s_volume.get():
+        while (
+            self.media_player.get_media_player().audio_get_volume()
+            < self.s_volume.get()
+        ):
             self.media_player.get_media_player().audio_set_volume(
                 self.media_player.get_media_player().audio_get_volume() + 1
             )
-            time.sleep(0.005)
+            time.sleep(FADING_SLEEP_TIME)
 
         self.media_player.get_media_player().audio_set_volume(self.s_volume.get())

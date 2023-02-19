@@ -11,3 +11,6 @@ MUSIC_FOLDER = "Input/Music"
 # Geometry
 PAD_X = 10
 PAD_Y = 5
+
+# Other
+FADING_SLEEP_TIME = 0.005

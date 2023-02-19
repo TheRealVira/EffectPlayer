@@ -14,18 +14,24 @@ from code.constants import (
 ROW = -1
 sound_managers = []
 
+
 def get_row():
     """Returns incremental row."""
     global ROW
     return (ROW := ROW + 1)
 
+
 def keyboard_event(event):
+    """Macro keyboard event handler."""
     for sound_manager in sound_managers:
         sound_manager.macro_focus(event.char)
 
+
 def stop_everything():
+    """Stop button event handler."""
     for sound_manager in sound_managers:
         sound_manager.stop_everything()
+
 
 if __name__ == "__main__":
     window = Tk()
@@ -40,14 +46,28 @@ if __name__ == "__main__":
         row=get_row(), column=0, sticky="NEWS"
     )
 
-    effect_manager = SoundManager(frame=window, folder= EFFECTS_FOLDER,row=get_row(), column=0, columnspan=3, title="Effects:")
+    effect_manager = SoundManager(
+        frame=window,
+        folder=EFFECTS_FOLDER,
+        row=get_row(),
+        column=0,
+        columnspan=3,
+        title="Effects:",
+    )
     effect_manager.insert_sound()
     sound_managers.append(effect_manager)
 
-    music_manager = SoundManager(frame=window, folder= MUSIC_FOLDER,row=get_row(), column=0, columnspan=3, title="Music:", vlc_params="--input-repeat=999999")
+    music_manager = SoundManager(
+        frame=window,
+        folder=MUSIC_FOLDER,
+        row=get_row(),
+        column=0,
+        columnspan=3,
+        title="Music:",
+        vlc_params="--input-repeat=999999",
+    )
     music_manager.insert_sound()
     sound_managers.append(music_manager)
-
 
     Button(window, font=GLOBAL_FONT, text="STOP", command=stop_everything).grid(
         row=get_row(), columnspan=2, sticky="EWS", padx=PAD_X, pady=PAD_Y
