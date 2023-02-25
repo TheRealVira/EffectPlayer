@@ -1,8 +1,6 @@
 """A sound manager for effects and music."""
 import os
-import threading
-import time
-import vlc
+from abc import ABC, abstractmethod
 import tkinter as tk
 from tkinter import ttk
 from code.sound_entity import SoundEntity
@@ -10,18 +8,15 @@ from code.macro_prompt import MacroPrompt
 from code.constants import (
     PAD_X,
     PAD_Y,
-    FADING_SLEEP_TIME,
 )
 
 
-class SoundManager:
-    """A class wrapping vlc media player."""
+class SoundManager(ABC):
+    """An abstract sound manager and UI element."""
 
-    def __init__(self, frame, folder, title, row, column, columnspan, vlc_params=""):
+    def __init__(self, frame, folder, title, row, column, columnspan):
         self.entities = []
         self.folder = folder
-        self.player_music = vlc.Instance(vlc_params)
-        self.media_player = self.player_music.media_list_player_new()
 
         self.frame = ttk.LabelFrame(frame, text=title)
         self.frame.grid(
@@ -47,13 +42,15 @@ class SoundManager:
         self.s_volume.grid(row=0, column=0, sticky="NEWS")
 
         # Sound selection listbox
-        self.tree = ttk.Treeview(self.frame, selectmode="browse", show='tree')
+        self.tree = ttk.Treeview(self.frame, selectmode="browse", show="tree")
         self.tree.bind("<<TreeviewSelect>>", self.selection_event_handler)
         self.tree.bind("<Control-Button-1>", self.macro_change)
         self.tree.grid(column=0, row=1, sticky="NEWS")
 
         # Scrollbar
-        self.scrollbar = ttk.Scrollbar(self.frame, orient=tk.VERTICAL, command=self.tree.yview)
+        self.scrollbar = ttk.Scrollbar(
+            self.frame, orient=tk.VERTICAL, command=self.tree.yview
+        )
         self.tree.configure(yscroll=self.scrollbar.set)
         self.scrollbar.grid(column=1, row=1, sticky="NS")
 
@@ -68,12 +65,14 @@ class SoundManager:
             if not filename.endswith(".gitignore"):
                 new_entity = SoundEntity(filename)
                 self.entities.append(new_entity)
-                self.tree.insert('', tk.END, new_entity.display(), text = new_entity.display())
+                self.tree.insert(
+                    "", tk.END, new_entity.display(), text=new_entity.display()
+                )
 
     def macro_change(self, event):
         """Update macro for current effect."""
         if self.tree.focus():
-            selection = self.get_entity_from_string(self.tree.focus())# self.list_box.curselection()
+            selection = self.get_entity_from_string(self.tree.focus())
             if selection:
                 new_macro = MacroPrompt().ask(selection.display())
                 if new_macro:
@@ -88,11 +87,15 @@ class SoundManager:
                 self.tree.focus_set()
                 self.tree.focus(entity.display())
 
-    def update_volume(self, event):
-        """Update volume event handler."""
-        self.media_player.get_media_player().audio_set_volume(self.get_volume())
+    def selection_event_handler(self, event=None):
+        """Eventhandler for Music change."""
+        if self.tree.selection():
+            selection = self.get_entity_from_string(self.tree.focus())
+            if selection:
+                self.load_sound(os.path.join(self.folder, selection.get_file()))
 
     def get_entity_from_string(self, entity_name):
+        """If entity exists, function returns name of entity. Else it returns None."""
         if entity_name:
             for entity in self.entities:
                 if entity.display() == entity_name:
@@ -100,43 +103,19 @@ class SoundManager:
 
         return None
 
-    def selection_event_handler(self, event=None):
-        """Eventhandler for Music change."""
-        if self.tree.selection():
-            selection = self.get_entity_from_string(self.tree.focus()) #self.list_box.curselection()
-            if selection:
-                thread = threading.Thread(target=self.change_media(selection))
-                thread.start()
+    def update_volume(self, event):
+        """Event Handler for volume change."""
+        self.set_volume(self.get_volume())
 
+    @abstractmethod
+    def load_sound(self, soundfile):
+        """Loads sound during selection change. Fading is taken care of."""
+
+    @abstractmethod
+    def set_volume(self, volume):
+        """Sets volume."""
+
+    @abstractmethod
     def stop_everything(self):
         """Stop playing sounds and unselect everything in listbox."""
-        #self.list_box.selection_clear(0, "end")
-        self.tree.selection_set('')
-        self.media_player.stop()
-
-    def change_media(self, selection):
-        """Music change."""
-        while self.media_player.get_media_player().audio_get_volume() > 0:
-            self.media_player.get_media_player().audio_set_volume(
-                self.media_player.get_media_player().audio_get_volume() - 1
-            )
-            time.sleep(FADING_SLEEP_TIME)
-        self.media_player.stop()
-        current_music_media = self.player_music.media_new(
-            os.path.join(self.folder, selection.get_file())
-        )
-        music_media_list = self.player_music.media_list_new()
-        music_media_list.add_media(current_music_media)
-
-        self.media_player.set_media_list(music_media_list)
-        self.media_player.play()
-        while (
-            self.media_player.get_media_player().audio_get_volume()
-            < self.get_volume()
-        ):
-            self.media_player.get_media_player().audio_set_volume(
-                self.media_player.get_media_player().audio_get_volume() + 1
-            )
-            time.sleep(FADING_SLEEP_TIME)
-
-        self.media_player.get_media_player().audio_set_volume(self.get_volume())
+        self.tree.selection_set("")

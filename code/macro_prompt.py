@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedTk
 
+
 class MacroPrompt:
     """A prompt class for keyboard macros"""
 
@@ -13,9 +14,7 @@ class MacroPrompt:
         self.to_return = '""'
         self.row = -1
         self.prompt.bind("<KeyPress>", self.keyboard_event)
-        self.input_display = ttk.LabelFrame(
-            self.prompt, text="Input:"
-        )
+        self.input_display = ttk.LabelFrame(self.prompt, text="Input:")
         self.macro_label = ttk.Label(self.input_display, text="")
 
     def get_row(self):
@@ -56,8 +55,8 @@ class MacroPrompt:
 
     def keyboard_event(self, event):
         """Eventhandler for keyboard macros."""
-        self.macro_label.config(text=f'"{event.char}"')
-        self.to_return = event.char
+        self.macro_label.config(text=f'keycode: {event.keycode}: "{event.char}"')
+        self.to_return = event.keycode
 
     def accept_button_event(self):
         """Quits the prompt."""

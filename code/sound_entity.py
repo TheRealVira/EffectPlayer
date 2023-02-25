@@ -11,7 +11,6 @@ class SoundEntity:
 
     def display(self):
         """Returns filename without extension."""
-        # return f'{f"{self.macro}: " if self.macro else ""}{Path(self.file).stem}'
         return Path(self.file).stem
 
     def set_macro(self, macro):

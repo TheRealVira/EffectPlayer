@@ -1,17 +1,16 @@
 """A nice effect player for some digital DnD 🐉🎲"""
 import tkinter as tk
+import pygame
 from tkinter import ttk
 from ttkthemes import ThemedTk
+from code.effect_manager import EffectManager
 from code.sound_manager import SoundManager
+from code.music_manager import MusicManager
 from code.constants import (
-    EFFECTS_FOLDER,
-    MUSIC_FOLDER,
-    COPYRIGHT_FONT,
-    GLOBAL_FONT,
     HEADER_FONT,
     PAD_X,
     PAD_Y,
-    THEME
+    THEME,
 )
 
 ROW = -1
@@ -27,7 +26,7 @@ def get_row():
 def keyboard_event(event):
     """Macro keyboard event handler."""
     for sound_manager in sound_managers:
-        sound_manager.macro_focus(event.char)
+        sound_manager.macro_focus(event.keycode)
 
 
 def stop_everything():
@@ -38,12 +37,15 @@ def stop_everything():
 
 if __name__ == "__main__":
     # Window settings
-    window = ThemedTk(theme='yaru')
+    window = ThemedTk(theme="yaru")
     window.title("EffectPlayer")
     window.columnconfigure(0, weight=1)
     window.resizable(False, False)
     window.grid_rowconfigure(0, weight=1)
     window.bind("<KeyPress>", keyboard_event)
+
+    pygame.init()
+    pygame.mixer.init()
 
     # Style
     style = ttk.Style(window)
@@ -53,26 +55,16 @@ if __name__ == "__main__":
         row=get_row(), column=0, sticky="NEWS"
     )
 
-    effect_manager = SoundManager(
+    effect_manager = EffectManager(
         frame=window,
-        folder=EFFECTS_FOLDER,
         row=get_row(),
         column=0,
         columnspan=3,
-        title="Effects:",
     )
     effect_manager.insert_sound()
     sound_managers.append(effect_manager)
 
-    music_manager = SoundManager(
-        frame=window,
-        folder=MUSIC_FOLDER,
-        row=get_row(),
-        column=0,
-        columnspan=3,
-        title="Music:",
-        vlc_params="--input-repeat=999999",
-    )
+    music_manager = MusicManager(frame=window, row=get_row(), column=0, columnspan=3)
     music_manager.insert_sound()
     sound_managers.append(music_manager)
 
@@ -82,7 +74,6 @@ if __name__ == "__main__":
     ttk.Label(window, text="Made by Vira").grid(
         row=ROW, column=2, sticky="EWS", padx=PAD_X, pady=PAD_Y
     )
-    
 
     # Start
     window.mainloop()
