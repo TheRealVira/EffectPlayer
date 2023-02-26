@@ -91,6 +91,7 @@ class MainWindow(ThemedTk):
 
     def quit(self) -> None:
         """Sets done to True."""
+        MidiManager.unsubscribe(self.keyboard_event)
         self._done = True
 
     def keyboard_event(self, event) -> None:

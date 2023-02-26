@@ -34,6 +34,11 @@ class MidiManager:
         """Subscribe to MidiManager events."""
         cls.observers["Keypress"].append(function)
 
+    @classmethod
+    def unsubscribe(cls, function) -> None:
+        """Remove subscription from MidiManager events."""
+        cls.observers["Keypress"].remove(function)
+
     def update(self) -> None:
         """Update Midi Manager."""
         if self.midi_input:

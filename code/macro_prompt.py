@@ -18,6 +18,7 @@ class MacroPrompt(tk.Toplevel):
         MidiManager.subscribe(self.keyboard_event)
         self.input_display = ttk.LabelFrame(self, text="Input:")
         self.macro_label = ttk.Label(self.input_display, text="")
+        self.protocol("WM_DELETE_WINDOW", self.quit)
 
     def subscribe(self, function) -> None:
         """Subscribe to when the user accepts a macro."""
@@ -69,6 +70,11 @@ class MacroPrompt(tk.Toplevel):
 
     def accept_button_event(self) -> None:
         """Quits the prompt."""
-        self.destroy()
         for function in self.observers:
             function(self.to_return)
+        self.quit()
+
+    def quit(self) -> None:
+        """Make sure to clean up."""
+        MidiManager.unsubscribe(self.keyboard_event)
+        self.destroy()
