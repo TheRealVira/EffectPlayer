@@ -1,6 +1,7 @@
 """A prompt for keyboard macros"""
 import tkinter as tk
 from tkinter import ttk
+from code.midi_manager import MidiManager
 import constants
 
 
@@ -12,16 +13,22 @@ class MacroPrompt(tk.Toplevel):
         tk.Toplevel.__init__(self)
         self.to_return = '""'
         self.row = -1
+        self.observers = []
         self.bind("<KeyPress>", self.keyboard_event)
+        MidiManager.subscribe(self.keyboard_event)
         self.input_display = ttk.LabelFrame(self, text="Input:")
         self.macro_label = ttk.Label(self.input_display, text="")
+
+    def subscribe(self, function) -> None:
+        """Subscribe to when the user accepts a macro."""
+        self.observers.append(function)
 
     def get_row(self) -> int:
         """Returns incremental row."""
         self.row += 1
         return self.row
 
-    def ask(self, prompt_text: str) -> str:
+    def ask(self, prompt_text: str):
         """Opens a new prompt and returns a key, if not cancelled."""
         self.title("Bind macro")
         self.resizable(False, False)
@@ -54,9 +61,6 @@ class MacroPrompt(tk.Toplevel):
         self.lift()
         self.focus_force()
         self.grab_set()
-        self.wait_window()
-
-        return self.to_return
 
     def keyboard_event(self, event) -> None:
         """Eventhandler for keyboard macros."""
@@ -66,3 +70,5 @@ class MacroPrompt(tk.Toplevel):
     def accept_button_event(self) -> None:
         """Quits the prompt."""
         self.destroy()
+        for function in self.observers:
+            function(self.to_return)

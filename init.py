@@ -6,7 +6,9 @@ import pygame
 import pygame.midi
 import constants
 from code.main_window import MainWindow
+from code.midi_manager import MidiManager
 
+midi_event_handlers = []
 
 if __name__ == "__main__":
     pygame.init()
@@ -18,27 +20,16 @@ if __name__ == "__main__":
     if default_midi_input_id != -1:
         default_midi_input = pygame.midi.Input(default_midi_input_id)
 
+    midiManager = MidiManager(midi_input=default_midi_input)
+
     window = MainWindow()
 
     clock = pygame.time.Clock()
 
     while not window.is_done:
         clock.tick(constants.TICKS)
-        try:
-            window.update()
-
-            # Handle MIDI
-            if default_midi_input:
-                if default_midi_input.poll():
-                    midi_events = default_midi_input.read(10)
-                    pygame_midi_events = pygame.midi.midis2events(
-                        midi_events, default_midi_input.device_id
-                    )
-                    for midi_event in pygame_midi_events:
-                        print(midi_event.dict)
-
-        except Exception as e:
-            print(f"[ERR] {e}")
+        window.update()
+        midiManager.update()
 
     # Quit
     pygame.midi.quit()

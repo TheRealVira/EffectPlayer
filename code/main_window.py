@@ -3,6 +3,7 @@ import webbrowser
 from tkinter import ttk
 from ttkthemes import ThemedTk
 from code.sound_manager import SoundManager
+from code.midi_manager import MidiManager
 import constants
 
 
@@ -20,6 +21,8 @@ class MainWindow(ThemedTk):
         self.grid_rowconfigure(0, weight=1)
         self.bind("<KeyPress>", self.keyboard_event)
         self.protocol("WM_DELETE_WINDOW", self.quit)
+
+        MidiManager.subscribe(self.keyboard_event)
 
         # Style
         style = ttk.Style(self)

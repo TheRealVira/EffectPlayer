@@ -11,6 +11,10 @@ MUSIC_FOLDER = "Input/Music"
 PAD_X = 10
 PAD_Y = 5
 
+# MIDI
+MIDI_NOTES = 10
+MIDI_ON_NOTE_STATUS = 153 # magic numberz
+
 # Other
 FADING = 250
 THEME = "yaru"

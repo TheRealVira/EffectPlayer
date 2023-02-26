@@ -88,9 +88,9 @@ class SoundManager(ttk.LabelFrame):
         if self.tree.focus():
             selection = self.get_entity_from_string(self.tree.focus())
             if selection:
-                new_macro = MacroPrompt().ask(selection.display)
-                if new_macro:
-                    selection.set_macro(new_macro)
+                new_macro = MacroPrompt()
+                new_macro.subscribe(selection.set_macro)
+                new_macro.ask(selection.display)
 
     def macro_focus(self, macro: str) -> None:
         """Select entities based on macro"""
