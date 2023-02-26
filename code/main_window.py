@@ -4,10 +4,6 @@ from tkinter import ttk
 from ttkthemes import ThemedTk
 from code.sound_manager import SoundManager
 import constants
-import platform
-
-if platform.system == "Windows":
-    os.environ["SDL_VIDEODRIVER"] = "windib"
 
 
 class MainWindow(ThemedTk):

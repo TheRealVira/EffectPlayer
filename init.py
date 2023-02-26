@@ -10,7 +10,6 @@ from code.main_window import MainWindow
 
 if __name__ == "__main__":
     pygame.init()
-    display = pygame.display.set_mode((300, 300))
     pygame.mixer.init()
     pygame.midi.init()
 
@@ -33,10 +32,10 @@ if __name__ == "__main__":
                 if default_midi_input.poll():
                     midi_events = default_midi_input.read(10)
                     pygame_midi_events = pygame.midi.midis2events(
-                        default_midi_input_id, default_midi_input.device_id
+                        midi_events, default_midi_input.device_id
                     )
-
-                    # TODO: Handle Input
+                    for midi_event in pygame_midi_events:
+                        print(midi_event.dict)
 
         except Exception as e:
             print(f"[ERR] {e}")
