@@ -9,8 +9,6 @@ from code.midi_manager import MidiManager
 import pygame.midi
 import config.constants
 
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
-
 midi_event_handlers = []
 
 if __name__ == "__main__":
