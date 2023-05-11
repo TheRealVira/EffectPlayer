@@ -34,7 +34,7 @@ class SoundEntity:
     def play(self, channel: int, loops: int):
         """Plays da tunes. Fading is taken care of."""
         pygame.mixer.Channel(channel).fadeout(constants.FADING)
-        pygame.time.wait(constants.FADING)
+        pygame.time.wait(constants.FADING + 100)
         pygame.mixer.Channel(channel).play(
             self.get_sound(), loops=loops, fade_ms=constants.FADING
         )

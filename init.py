@@ -16,11 +16,11 @@ if __name__ == "__main__":
     pygame.midi.init()
 
     default_midi_input_id = pygame.midi.get_default_input_id()
-    default_midi_input = None
+    DEFAULT_MIDI_INPUT = None
     if default_midi_input_id != -1:
-        default_midi_input = pygame.midi.Input(default_midi_input_id)
+        DEFAULT_MIDI_INPUT = pygame.midi.Input(default_midi_input_id)
 
-    midiManager = MidiManager(midi_input=default_midi_input)
+    midiManager = MidiManager(midi_input=DEFAULT_MIDI_INPUT)
 
     window = MainWindow()
 
