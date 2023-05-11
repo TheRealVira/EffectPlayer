@@ -39,9 +39,9 @@ class MainWindow(ThemedTk):
             columnspan=3,
             title="Effects:",
             channel=0,
-            folder=constants.EFFECTS_FOLDER,
+            folder=constants.EFFECTS_FOLDER_ABS,
         )
-        effect_manager.insert_sound()
+        effect_manager.insert_sound(constants.PRE_LOAD_SOUNDS)
         self.sound_managers.append(effect_manager)
 
         music_manager = SoundManager(
@@ -52,9 +52,9 @@ class MainWindow(ThemedTk):
             title="Music:",
             channel=1,
             loops=-1,
-            folder=constants.MUSIC_FOLDER,
+            folder=constants.MUSIC_FOLDER_ABS,
         )
-        music_manager.insert_sound()
+        music_manager.insert_sound(constants.PRE_LOAD_SOUNDS)
         self.sound_managers.append(music_manager)
 
         ttk.Button(self, text="STOP", command=self.stop_everything).grid(

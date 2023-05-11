@@ -1,13 +1,16 @@
 """A class defining a sound entity"""
 from pathlib import Path
+import pygame
+import constants
 
 
 class SoundEntity:
     """A class defining a sound entity"""
 
-    def __init__(self, file: str):
+    def __init__(self, file: str, preload: bool):
         self.file = file
         self.macro = ""
+        self.sound = pygame.mixer.Sound(self.file) if preload else None
 
     @property
     def display(self) -> str:
@@ -22,10 +25,16 @@ class SoundEntity:
         """Returns macro"""
         return self.macro
 
-    def set_file(self, new_file: str):
-        """Sets new file path"""
-        self.file = new_file
+    def get_sound(self) -> pygame.mixer.Sound:
+        """Returns pygame Sound entity"""
+        if not self.sound:
+            self.sound = pygame.mixer.Sound(self.file)
+        return self.sound
 
-    def get_file(self) -> str:
-        """Returns file path"""
-        return self.file
+    def play(self, channel: int, loops: int):
+        """Plays da tunes. Fading is taken care of."""
+        pygame.mixer.Channel(channel).fadeout(constants.FADING)
+        pygame.time.wait(constants.FADING)
+        pygame.mixer.Channel(channel).play(
+            self.get_sound(), loops=loops, fade_ms=constants.FADING
+        )

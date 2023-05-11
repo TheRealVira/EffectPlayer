@@ -72,12 +72,12 @@ class SoundManager(ttk.LabelFrame):
         """Returns volume as int."""
         return float(self.s_volume.get() / 100)
 
-    def insert_sound(self) -> None:
+    def insert_sound(self, pre_load: bool) -> None:
         """Fetches all files from a folder and inserts it sorted into a ListBox."""
         self.entities = []
         for filename in sorted(os.listdir(self.folder)):
             if not filename.endswith(".gitignore"):
-                new_entity = SoundEntity(filename)
+                new_entity = SoundEntity(os.path.join(self.folder, filename), pre_load)
                 self.entities.append(new_entity)
                 self.tree.insert(
                     "", tk.END, new_entity.display, text=new_entity.display
@@ -106,7 +106,7 @@ class SoundManager(ttk.LabelFrame):
         if self.tree.selection():
             selection = self.get_entity_from_string(self.tree.focus())
             if selection:
-                self.load_sound(os.path.join(self.folder, selection.get_file()))
+                selection.play(self.channel, self.loops)
 
     def get_entity_from_string(self, entity_name: str) -> SoundEntity:
         """If entity exists, function returns name of entity. Else it returns None."""
@@ -125,11 +125,3 @@ class SoundManager(ttk.LabelFrame):
     def update_volume(self, event) -> None:
         """Event Handler for volume change."""
         pygame.mixer.Channel(self.channel).set_volume(self.get_volume())
-
-    def load_sound(self, soundfile: str) -> None:
-        """Loads sound during selection change. Fading is taken care of."""
-        pygame.mixer.Channel(self.channel).fadeout(constants.FADING)
-        pygame.time.wait(constants.FADING)
-        pygame.mixer.Channel(self.channel).play(
-            pygame.mixer.Sound(soundfile), loops=self.loops, fade_ms=constants.FADING
-        )
