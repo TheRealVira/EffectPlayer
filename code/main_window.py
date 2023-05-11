@@ -1,17 +1,17 @@
 """A nice effect player for some digital DnD 🐉🎲"""
 import webbrowser
 from tkinter import ttk
-from ttkthemes import ThemedTk
 from code.sound_manager import SoundManager
 from code.midi_manager import MidiManager
-import constants
+from ttkthemes import ThemedTk
+import config.constants
 
 
 class MainWindow(ThemedTk):
     """Main Window containing all widgets."""
 
     def __init__(self) -> None:
-        ThemedTk.__init__(self, theme=constants.THEME)
+        ThemedTk.__init__(self, theme=config.constants.THEME)
         self.row = -1
         self._done = False
         self.sound_managers = []
@@ -26,9 +26,9 @@ class MainWindow(ThemedTk):
 
         # Style
         style = ttk.Style(self)
-        style.theme_use(constants.THEME)
+        style.theme_use(config.constants.THEME)
 
-        ttk.Label(self, font=constants.HEADER_FONT, text="EffectPlayer").grid(
+        ttk.Label(self, font=config.constants.HEADER_FONT, text="EffectPlayer").grid(
             row=self.get_row(), columnspan=3, sticky=""
         )
 
@@ -37,11 +37,11 @@ class MainWindow(ThemedTk):
             row=self.get_row(),
             column=0,
             columnspan=3,
-            title="Effects:",
+            title=config.constants.EFFECTS_FOLDER,
             channel=0,
-            folder=constants.EFFECTS_FOLDER_ABS,
+            folder=config.constants.EFFECTS_FOLDER_ABS,
         )
-        effect_manager.insert_sound(constants.PRE_LOAD_EFFECTS)
+        effect_manager.insert_sound(config.constants.PRE_LOAD_EFFECTS)
         self.sound_managers.append(effect_manager)
 
         music_manager = SoundManager(
@@ -49,24 +49,24 @@ class MainWindow(ThemedTk):
             row=self.get_row(),
             column=0,
             columnspan=3,
-            title="Music:",
+            title=config.constants.MUSIC_FOLDER,
             channel=1,
             loops=-1,
-            folder=constants.MUSIC_FOLDER_ABS,
+            folder=config.constants.MUSIC_FOLDER_ABS,
         )
-        music_manager.insert_sound(constants.PRE_LOAD_MUSIC)
+        music_manager.insert_sound(config.constants.PRE_LOAD_MUSIC)
         self.sound_managers.append(music_manager)
 
         ttk.Button(self, text="STOP", command=self.stop_everything).grid(
             row=self.get_row(),
             columnspan=2,
             sticky="EWS",
-            padx=constants.PAD_X,
-            pady=constants.PAD_Y,
+            padx=config.constants.PAD_X,
+            pady=config.constants.PAD_Y,
         )
         footer = ttk.Label(
             self,
-            font=constants.FOOTER_FONT,
+            font=config.constants.FOOTER_FONT,
             text="Made by Vira",
             foreground="blue",
             cursor="hand2",
@@ -80,8 +80,8 @@ class MainWindow(ThemedTk):
             row=self.row,
             column=2,
             sticky="EWS",
-            padx=constants.PAD_X,
-            pady=constants.PAD_Y,
+            padx=config.constants.PAD_X,
+            pady=config.constants.PAD_Y,
         )
 
     @property

@@ -1,7 +1,7 @@
 """A class defining a sound entity"""
 from pathlib import Path
 import pygame
-import constants
+import config.constants
 
 
 class SoundEntity:
@@ -33,8 +33,8 @@ class SoundEntity:
 
     def play(self, channel: int, loops: int):
         """Plays da tunes. Fading is taken care of."""
-        pygame.mixer.Channel(channel).fadeout(constants.FADING)
-        pygame.time.wait(constants.FADING + 100)
+        pygame.mixer.Channel(channel).fadeout(config.constants.FADING)
+        pygame.time.wait(config.constants.FADING + 100)
         pygame.mixer.Channel(channel).play(
-            self.get_sound(), loops=loops, fade_ms=constants.FADING
+            self.get_sound(), loops=loops, fade_ms=config.constants.FADING
         )

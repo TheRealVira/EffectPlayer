@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 from code.midi_manager import MidiManager
-import constants
+import config.constants
 
 
 class MacroPrompt(tk.Toplevel):
@@ -40,23 +40,23 @@ class MacroPrompt(tk.Toplevel):
         self.input_display.grid(
             column=self.get_row(),
             sticky="NEWS",
-            padx=constants.PAD_X,
-            pady=constants.PAD_Y,
+            padx=config.constants.PAD_X,
+            pady=config.constants.PAD_Y,
         )
 
         ttk.Label(self, text=f"Macro for: {prompt_text}").grid(
             row=self.get_row(),
             sticky="NEWS",
-            padx=constants.PAD_X,
-            pady=constants.PAD_Y,
+            padx=config.constants.PAD_X,
+            pady=config.constants.PAD_Y,
         )
         self.macro_label.grid(row=0, column=0, sticky="NEWS")
         ttk.Button(self, text="Accept", command=self.accept_button_event).grid(
             row=self.get_row(),
             column=0,
             sticky="NEWS",
-            padx=constants.PAD_X,
-            pady=constants.PAD_Y,
+            padx=config.constants.PAD_X,
+            pady=config.constants.PAD_Y,
         )
 
         self.lift()

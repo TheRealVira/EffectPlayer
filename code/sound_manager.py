@@ -1,11 +1,12 @@
+# pylint: disable=too-many-ancestors
 """A sound manager for effects and music."""
 import os
 import tkinter as tk
 from tkinter import ttk
-import pygame
 from code.sound_entity import SoundEntity
 from code.macro_prompt import MacroPrompt
-import constants
+import pygame
+import config.constants
 
 
 class SoundManager(ttk.LabelFrame):
@@ -33,8 +34,8 @@ class SoundManager(ttk.LabelFrame):
             column=column,
             columnspan=columnspan,
             sticky="NEWS",
-            padx=constants.PAD_X,
-            pady=constants.PAD_Y,
+            padx=config.constants.PAD_X,
+            pady=config.constants.PAD_Y,
         )
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -83,7 +84,7 @@ class SoundManager(ttk.LabelFrame):
                     "", tk.END, new_entity.display, text=new_entity.display
                 )
 
-    def macro_change(self, event) -> None:
+    def macro_change(self, _) -> None:
         """Update macro for current effect."""
         if self.tree.focus():
             selection = self.get_entity_from_string(self.tree.focus())
@@ -101,7 +102,7 @@ class SoundManager(ttk.LabelFrame):
                 self.tree.focus_set()
                 self.tree.focus(entity.display)
 
-    def selection_event_handler(self, event=None) -> None:
+    def selection_event_handler(self, _) -> None:
         """Eventhandler for Music change."""
         if self.tree.selection():
             selection = self.get_entity_from_string(self.tree.focus())
@@ -120,8 +121,8 @@ class SoundManager(ttk.LabelFrame):
     def stop_everything(self) -> None:
         """Stop playing sounds and unselect everything in listbox."""
         self.tree.selection_set("")
-        pygame.mixer.Channel(self.channel).fadeout(constants.FADING)
+        pygame.mixer.Channel(self.channel).fadeout(config.constants.FADING)
 
-    def update_volume(self, event) -> None:
+    def update_volume(self, _) -> None:
         """Event Handler for volume change."""
         pygame.mixer.Channel(self.channel).set_volume(self.get_volume())
