@@ -3,10 +3,10 @@ import contextlib
 
 with contextlib.redirect_stdout(None):
     import pygame
-from code.main_window import MainWindow
-from code.midi_manager import MidiManager
 import pygame.midi
-import config.constants
+from interface.main import MainWindow
+from manager.midi import MidiManager
+from manager.config import CONFIG
 
 midi_event_handlers = []
 
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
 
     while not window.is_done:
-        clock.tick(config.constants.TICKS)
+        clock.tick(CONFIG.getint("default", "TICKS"))
         window.update()
         midiManager.update()
 

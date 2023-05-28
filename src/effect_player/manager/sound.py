@@ -3,10 +3,13 @@
 import os
 import tkinter as tk
 from tkinter import ttk
-from code.sound_entity import SoundEntity
-from code.macro_prompt import MacroPrompt
 import pygame
-import config.constants
+from manager.config import CONFIG
+from interface.macro import MacroPrompt
+from entity.sound import SoundEntity
+from entity.contentfolder import Contentfolder
+from entity.interface import InterfaceEntity
+from entity.player import PlayerEntity
 
 
 class SoundManager(ttk.LabelFrame):
@@ -15,27 +18,23 @@ class SoundManager(ttk.LabelFrame):
     def __init__(
         self,
         frame,
-        folder: str,
-        title: str,
-        row: int,
-        column: int,
-        columnspan: int,
-        channel: int,
-        loops: int = 0,
+        contentfolder: Contentfolder,
+        interface_entity: InterfaceEntity,
+        player_entity: PlayerEntity,
     ):
-        ttk.LabelFrame.__init__(self, master=frame, text=title)
+        self.contentfolder = contentfolder
+        self.interface_entity = interface_entity
+        ttk.LabelFrame.__init__(self, master=frame, text=self.contentfolder.title)
         self.entities = []
-        self.folder = folder
-        self._channel = channel
-        self.loops = loops
+        self.player_entity = player_entity
 
         self.grid(
-            row=row,
-            column=column,
-            columnspan=columnspan,
+            row=self.interface_entity.row,
+            column=self.interface_entity.column,
+            columnspan=self.interface_entity.columnspan,
             sticky="NEWS",
-            padx=config.constants.PAD_X,
-            pady=config.constants.PAD_Y,
+            padx=CONFIG.getint("default", "PAD_X"),
+            pady=CONFIG.getint("default", "PAD_Y"),
         )
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -67,7 +66,7 @@ class SoundManager(ttk.LabelFrame):
     @property
     def channel(self) -> int:
         """PyGame mixer channel"""
-        return self._channel
+        return self.player_entity.channel
 
     def get_volume(self) -> float:
         """Returns volume as int."""
@@ -76,9 +75,11 @@ class SoundManager(ttk.LabelFrame):
     def insert_sound(self, pre_load: bool) -> None:
         """Fetches all files from a folder and inserts it sorted into a ListBox."""
         self.entities = []
-        for filename in sorted(os.listdir(self.folder)):
+        for filename in sorted(os.listdir(self.contentfolder.folder)):
             if not filename.endswith(".gitignore"):
-                new_entity = SoundEntity(os.path.join(self.folder, filename), pre_load)
+                new_entity = SoundEntity(
+                    os.path.join(self.contentfolder.folder, filename), pre_load
+                )
                 self.entities.append(new_entity)
                 self.tree.insert(
                     "", tk.END, new_entity.display, text=new_entity.display
@@ -107,7 +108,7 @@ class SoundManager(ttk.LabelFrame):
         if self.tree.selection():
             selection = self.get_entity_from_string(self.tree.focus())
             if selection:
-                selection.play(self.channel, self.loops)
+                selection.play(self.player_entity.channel, self.player_entity.loops)
 
     def get_entity_from_string(self, entity_name: str) -> SoundEntity:
         """If entity exists, function returns name of entity. Else it returns None."""
@@ -121,8 +122,10 @@ class SoundManager(ttk.LabelFrame):
     def stop_everything(self) -> None:
         """Stop playing sounds and unselect everything in listbox."""
         self.tree.selection_set("")
-        pygame.mixer.Channel(self.channel).fadeout(config.constants.FADING)
+        pygame.mixer.Channel(self.player_entity.channel).fadeout(
+            CONFIG.getint("default", "FADING")
+        )
 
     def update_volume(self, _) -> None:
         """Event Handler for volume change."""
-        pygame.mixer.Channel(self.channel).set_volume(self.get_volume())
+        pygame.mixer.Channel(self.player_entity.channel).set_volume(self.get_volume())

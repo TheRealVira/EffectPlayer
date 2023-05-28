@@ -1,2 +1,6 @@
 pygame
 ttkthemes
+configparser
+mkdocs
+mkdocs-material
+mkdocstrings
