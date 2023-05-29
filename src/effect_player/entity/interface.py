@@ -1,4 +1,5 @@
-"""A class containing interface entity properties"""
+"""A class containing interface entity properties.
+"""
 
 
 class InterfaceEntity:

@@ -1,4 +1,5 @@
-"""Manages MIDI input and events."""
+"""Manages MIDI input and events.
+"""
 from collections import defaultdict
 import pygame
 from manager.config import CONFIG

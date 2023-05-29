@@ -1,7 +1,8 @@
-"""A class defining a contentfolder"""
+"""A class defining a contentfolder.
+"""
 
 
-class Contentfolder:
+class ContentfolderEntity:
     """A class defining a contentfolder"""
 
     def __init__(self, title: str, folder: str):

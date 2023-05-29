@@ -1,4 +1,5 @@
-"""A class defining a sound entity"""
+"""A class defining a sound entity.
+"""
 from pathlib import Path
 import pygame
 from manager.config import CONFIG

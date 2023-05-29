@@ -1,20 +1,23 @@
+.PHONY: default init lint run doc serve
 PROGRAM_NAME = python
 PROGRAM = src/effect_player/effect_player.py
 
-default: all
+default: init lint doc
 
 init:	
 	pip install -r requirements.txt
 
-doc
-	mkdocs build
-
 lint:
+	black .
 	pylint src
 
 run:
 	${PROGRAM_NAME} ./${PROGRAM} ${ARGS}
 
-all: init lint run
+doc:
+	mkdocs build
 
-.PHONY: test doc lint
+serve:
+	mkdocs serve
+
+all: init lint doc run

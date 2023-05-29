@@ -1,4 +1,5 @@
-"""A class containing player entity properties"""
+"""A class containing player entity properties.
+"""
 
 
 class PlayerEntity:

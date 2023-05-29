@@ -1,11 +1,12 @@
-"""A nice effect player for some digital DnD 🐉🎲"""
+"""A nice effect player for some digital DnD 🐉🎲
+"""
 import webbrowser
 from tkinter import ttk
 from ttkthemes import ThemedTk
 from manager.sound import SoundManager
 from manager.midi import MidiManager
 from manager.config import CONFIG
-from entity.contentfolder import Contentfolder
+from entity.contentfolder import ContentfolderEntity
 from entity.interface import InterfaceEntity
 from entity.player import PlayerEntity
 
@@ -40,7 +41,7 @@ class MainWindow(ThemedTk):
             interface_entity=InterfaceEntity(
                 column=0, columnspan=3, row=self.get_row()
             ),
-            contentfolder=Contentfolder(
+            contentfolder_entity=ContentfolderEntity(
                 title=CONFIG["default"]["EFFECTS_FOLDER"],
                 folder=CONFIG["default"]["EFFECTS_FOLDER_ABS"],
             ),
@@ -54,7 +55,7 @@ class MainWindow(ThemedTk):
             interface_entity=InterfaceEntity(
                 column=0, columnspan=3, row=self.get_row()
             ),
-            contentfolder=Contentfolder(
+            contentfolder_entity=ContentfolderEntity(
                 title=CONFIG["default"]["MUSIC_FOLDER"],
                 folder=CONFIG["default"]["MUSIC_FOLDER_ABS"],
             ),

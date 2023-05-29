@@ -1,4 +1,5 @@
-"""A prompt for keyboard macros"""
+"""A prompt for keyboard macros.
+"""
 import tkinter as tk
 from tkinter import ttk
 from manager.midi import MidiManager

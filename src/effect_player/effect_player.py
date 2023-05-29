@@ -1,4 +1,5 @@
-"""A nice effect player for some digital DnD 🐉🎲"""
+"""A nice effect player for some digital DnD 🐉🎲
+"""
 import contextlib
 
 with contextlib.redirect_stdout(None):

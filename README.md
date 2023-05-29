@@ -11,7 +11,7 @@ Simple run the following line of code to install all dependencies:
 ## Running the application
 To run the application just type the following command:
 
-	make (run)
+	make run
 
 That's it! Be sure to put all your effects inside `./Input/Effects` and all your music files into `./Input/Music` and restart the application to refresh all lists.
 
