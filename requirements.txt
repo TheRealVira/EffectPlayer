@@ -1,2 +1,7 @@
 pygame
 ttkthemes
+configparser
+mkdocs
+mkdocs-material
+mkdocs-include-markdown-plugin
+mkdocstrings

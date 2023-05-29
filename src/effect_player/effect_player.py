@@ -1,12 +1,13 @@
-"""A nice effect player for some digital DnD 🐉🎲"""
-import os
+"""A nice effect player for some digital DnD 🐉🎲
+"""
+import contextlib
 
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
-import pygame
+with contextlib.redirect_stdout(None):
+    import pygame
 import pygame.midi
-import constants
-from code.main_window import MainWindow
-from code.midi_manager import MidiManager
+from interface.main import MainWindow
+from manager.midi import MidiManager
+from manager.config import CONFIG
 
 midi_event_handlers = []
 
@@ -16,18 +17,18 @@ if __name__ == "__main__":
     pygame.midi.init()
 
     default_midi_input_id = pygame.midi.get_default_input_id()
-    default_midi_input = None
+    DEFAULT_MIDI_INPUT = None
     if default_midi_input_id != -1:
-        default_midi_input = pygame.midi.Input(default_midi_input_id)
+        DEFAULT_MIDI_INPUT = pygame.midi.Input(default_midi_input_id)
 
-    midiManager = MidiManager(midi_input=default_midi_input)
+    midiManager = MidiManager(midi_input=DEFAULT_MIDI_INPUT)
 
     window = MainWindow()
 
     clock = pygame.time.Clock()
 
     while not window.is_done:
-        clock.tick(constants.TICKS)
+        clock.tick(CONFIG.getint("default", "TICKS"))
         window.update()
         midiManager.update()
 

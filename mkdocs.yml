@@ -1,0 +1,19 @@
+site_name: EffectPlayer Docs
+repo_url: https://github.com/TheRealVira/EffectPlayer
+
+theme:
+  name: "material"
+
+plugins:
+- include-markdown
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        paths: [src]
+        options:
+          show_submodules: true
+
+nav:
+  - Home: index.md
+  - EffectPlayer Docs: effect_player.md

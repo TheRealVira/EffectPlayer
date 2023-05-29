@@ -1,7 +1,8 @@
-"""Manages MIDI input and events."""
+"""Manages MIDI input and events.
+"""
 from collections import defaultdict
 import pygame
-import constants
+from manager.config import CONFIG
 
 
 class KeyCodeEvent:
@@ -43,10 +44,13 @@ class MidiManager:
         """Update Midi Manager."""
         if self.midi_input:
             if self.midi_input.poll():
-                midi_events = self.midi_input.read(constants.MIDI_NOTES)
+                midi_events = self.midi_input.read(
+                    CONFIG.getint("default", "MIDI_NOTES")
+                )
                 pygame_midi_events = list(
                     filter(
-                        lambda e: e.dict["status"] == constants.MIDI_ON_NOTE_STATUS,
+                        lambda e: e.dict["status"]
+                        == CONFIG.getint("default", "MIDI_ON_NOTE_STATUS"),
                         pygame.midi.midis2events(
                             midi_events, self.midi_input.device_id
                         ),

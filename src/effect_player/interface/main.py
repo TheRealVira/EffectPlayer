@@ -1,17 +1,21 @@
-"""A nice effect player for some digital DnD 🐉🎲"""
+"""A nice effect player for some digital DnD 🐉🎲
+"""
 import webbrowser
 from tkinter import ttk
 from ttkthemes import ThemedTk
-from code.sound_manager import SoundManager
-from code.midi_manager import MidiManager
-import constants
+from manager.sound import SoundManager
+from manager.midi import MidiManager
+from manager.config import CONFIG
+from entity.contentfolder import ContentfolderEntity
+from entity.interface import InterfaceEntity
+from entity.player import PlayerEntity
 
 
 class MainWindow(ThemedTk):
     """Main Window containing all widgets."""
 
     def __init__(self) -> None:
-        ThemedTk.__init__(self, theme=constants.THEME)
+        ThemedTk.__init__(self, theme=CONFIG["default"]["THEME"])
         self.row = -1
         self._done = False
         self.sound_managers = []
@@ -26,47 +30,50 @@ class MainWindow(ThemedTk):
 
         # Style
         style = ttk.Style(self)
-        style.theme_use(constants.THEME)
+        style.theme_use(CONFIG["default"]["THEME"])
 
-        ttk.Label(self, font=constants.HEADER_FONT, text="EffectPlayer").grid(
-            row=self.get_row(), columnspan=3, sticky=""
-        )
+        ttk.Label(
+            self, font=CONFIG["default"]["HEADER_FONT"], text="EffectPlayer"
+        ).grid(row=self.get_row(), columnspan=3, sticky="")
 
         effect_manager = SoundManager(
             frame=self,
-            row=self.get_row(),
-            column=0,
-            columnspan=3,
-            title="Effects:",
-            channel=0,
-            folder=constants.EFFECTS_FOLDER,
+            interface_entity=InterfaceEntity(
+                column=0, columnspan=3, row=self.get_row()
+            ),
+            contentfolder_entity=ContentfolderEntity(
+                title=CONFIG["default"]["EFFECTS_FOLDER"],
+                folder=CONFIG["default"]["EFFECTS_FOLDER_ABS"],
+            ),
+            player_entity=PlayerEntity(channel=0),
         )
-        effect_manager.insert_sound()
+        effect_manager.insert_sound(CONFIG.getboolean("default", "PRE_LOAD_EFFECTS"))
         self.sound_managers.append(effect_manager)
 
         music_manager = SoundManager(
             frame=self,
-            row=self.get_row(),
-            column=0,
-            columnspan=3,
-            title="Music:",
-            channel=1,
-            loops=-1,
-            folder=constants.MUSIC_FOLDER,
+            interface_entity=InterfaceEntity(
+                column=0, columnspan=3, row=self.get_row()
+            ),
+            contentfolder_entity=ContentfolderEntity(
+                title=CONFIG["default"]["MUSIC_FOLDER"],
+                folder=CONFIG["default"]["MUSIC_FOLDER_ABS"],
+            ),
+            player_entity=PlayerEntity(channel=1, loops=-1),
         )
-        music_manager.insert_sound()
+        music_manager.insert_sound(CONFIG.getboolean("default", "PRE_LOAD_MUSIC"))
         self.sound_managers.append(music_manager)
 
         ttk.Button(self, text="STOP", command=self.stop_everything).grid(
             row=self.get_row(),
             columnspan=2,
             sticky="EWS",
-            padx=constants.PAD_X,
-            pady=constants.PAD_Y,
+            padx=CONFIG["default"]["PAD_X"],
+            pady=CONFIG["default"]["PAD_Y"],
         )
         footer = ttk.Label(
             self,
-            font=constants.FOOTER_FONT,
+            font=CONFIG["default"]["FOOTER_FONT"],
             text="Made by Vira",
             foreground="blue",
             cursor="hand2",
@@ -80,8 +87,8 @@ class MainWindow(ThemedTk):
             row=self.row,
             column=2,
             sticky="EWS",
-            padx=constants.PAD_X,
-            pady=constants.PAD_Y,
+            padx=CONFIG["default"]["PAD_X"],
+            pady=CONFIG["default"]["PAD_Y"],
         )
 
     @property
