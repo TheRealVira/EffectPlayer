@@ -19,7 +19,7 @@ def get_default_midi_input():
         default_id = pygame.midi.get_default_input_id()
         if default_id != -1:
             return pygame.midi.Input(default_id)
-    except Exception:
+    except pygame.midi.MidiException:
         pass
     return None
 
