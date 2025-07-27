@@ -1,8 +1,8 @@
-"""A class defining a sound entity.
-"""
+"""A class defining a sound entity."""
+
 from pathlib import Path
 import pygame
-from manager.config import CONFIG
+from effect_player.manager.config import CONFIG
 
 
 class SoundEntity:

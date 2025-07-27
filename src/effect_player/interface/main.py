@@ -1,17 +1,17 @@
-"""A nice effect player for some digital DnD 🐉🎲
-"""
+"""A nice effect player for some digital DnD 🐉🎲"""
+
 import ctypes
 import sys
 import tkinter as tk
 import webbrowser
 from tkinter import ttk
 from ttkthemes import ThemedTk
-from manager.sound import SoundManager
-from manager.midi import MidiManager
-from manager.config import CONFIG
-from entity.contentfolder import ContentfolderEntity
-from entity.interface import InterfaceEntity
-from entity.player import PlayerEntity
+from effect_player.manager.sound import SoundManager
+from effect_player.manager.midi import MidiManager
+from effect_player.manager.config import CONFIG
+from effect_player.entity.contentfolder import ContentfolderEntity
+from effect_player.entity.interface import InterfaceEntity
+from effect_player.entity.player import PlayerEntity
 
 
 class MainWindow(ThemedTk):
@@ -24,7 +24,6 @@ class MainWindow(ThemedTk):
         self.sound_managers = []
         self.title("EffectPlayer")
         self.columnconfigure(0, weight=1)
-        self.resizable(False, False)
         self.grid_rowconfigure(0, weight=1)
         self.bind("<KeyPress>", self.keyboard_event)
         self.protocol("WM_DELETE_WINDOW", self.quit)

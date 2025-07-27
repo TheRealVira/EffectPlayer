@@ -1,16 +1,15 @@
 # pylint: disable=too-many-ancestors
-"""A sound manager for effects and music.
-"""
+"""A sound manager for effects and music."""
 import os
 import tkinter as tk
 from tkinter import ttk
 import pygame
-from manager.config import CONFIG
-from interface.macro import MacroPrompt
-from entity.sound import SoundEntity
-from entity.contentfolder import ContentfolderEntity
-from entity.interface import InterfaceEntity
-from entity.player import PlayerEntity
+from effect_player.manager.config import CONFIG
+from effect_player.interface.macro import MacroPrompt
+from effect_player.entity.sound import SoundEntity
+from effect_player.entity.contentfolder import ContentfolderEntity
+from effect_player.entity.interface import InterfaceEntity
+from effect_player.entity.player import PlayerEntity
 
 
 class SoundManager(ttk.LabelFrame):

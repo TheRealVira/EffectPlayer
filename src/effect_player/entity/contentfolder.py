@@ -1,5 +1,4 @@
-"""A class defining a contentfolder.
-"""
+"""A class defining a contentfolder."""
 
 
 class ContentfolderEntity:

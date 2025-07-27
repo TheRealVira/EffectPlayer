@@ -1,8 +1,8 @@
-"""Manages MIDI input and events.
-"""
+"""Manages MIDI input and events."""
+
 from collections import defaultdict
 import pygame
-from manager.config import CONFIG
+from effect_player.manager.config import CONFIG
 
 
 class KeyCodeEvent:
@@ -38,7 +38,14 @@ class MidiManager:
     @classmethod
     def unsubscribe(cls, function) -> None:
         """Remove subscription from MidiManager events."""
-        cls.observers["Keypress"].remove(function)
+        if function in cls.observers["Keypress"]:
+            cls.observers["Keypress"].remove(function)
+
+    @classmethod
+    def notify_keypress(cls, keycode):
+        """Manually notify all observers of a keypress (for keyboard integration)."""
+        for function in cls.observers["Keypress"]:
+            function(KeyCodeEvent(keycode))
 
     def update(self) -> None:
         """Update Midi Manager."""

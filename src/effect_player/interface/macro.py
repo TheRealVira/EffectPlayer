@@ -1,9 +1,9 @@
-"""A prompt for keyboard macros.
-"""
+"""A prompt for keyboard macros."""
+
 import tkinter as tk
 from tkinter import ttk
-from manager.midi import MidiManager
-from manager.config import CONFIG
+from effect_player.manager.midi import MidiManager
+from effect_player.manager.config import CONFIG
 
 
 class MacroPrompt(tk.Toplevel):
@@ -65,9 +65,21 @@ class MacroPrompt(tk.Toplevel):
         self.grab_set()
 
     def keyboard_event(self, event) -> None:
-        """Eventhandler for keyboard macros."""
-        self.macro_label.config(text=f'keycode: {event.keycode}: "{event.char}"')
-        self.to_return = event.keycode
+        """Eventhandler for keyboard and MIDI macros."""
+        # Handle Tkinter keyboard event
+        if hasattr(event, "keycode"):
+            keycode = event.keycode
+            char = getattr(event, "char", "")
+        # Handle MIDI event (KeyCodeEvent from MidiManager)
+        elif hasattr(event, "_keycode"):
+            keycode = event.keycode
+            char = event.char
+        else:
+            keycode = None
+            char = ""
+        if keycode is not None:
+            self.macro_label.config(text=f'keycode: {keycode}: "{char}"')
+            self.to_return = keycode
 
     def accept_button_event(self) -> None:
         """Quits the prompt."""

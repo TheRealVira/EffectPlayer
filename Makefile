@@ -1,24 +1,25 @@
 .PHONY: default init lint run doc serve clean
-PROGRAM_NAME = python
-PROGRAM = src/effect_player/effect_player.py
+
+PYTHON ?= python
+PIP ?= pip
 
 default: init lint doc
 
 init:	
-	pip install -r requirements.txt
+	$(PIP) install -r requirements.txt
 
 lint:
-	black .
-	pylint src
+	$(PYTHON) -m black .
+	$(PYTHON) -m pylint src
 
 run:
-	${PROGRAM_NAME} ./${PROGRAM} ${ARGS}
+	set PYTHONPATH=src && $(PYTHON) -m effect_player.effect_player
 
 doc:
-	mkdocs build
+	$(PYTHON) -m mkdocs build
 
 serve:
-	mkdocs serve
+	$(PYTHON) -m mkdocs serve
 
 clean:
 	rm -rf build dist __pycache__ *.spec
