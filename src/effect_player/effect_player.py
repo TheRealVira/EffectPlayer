@@ -15,6 +15,7 @@ if __name__ == "__main__":
     pygame.init()
     pygame.mixer.init()
     pygame.midi.init()
+    pygame.mixer.set_num_channels(16)
 
     default_midi_input_id = pygame.midi.get_default_input_id()
     DEFAULT_MIDI_INPUT = None

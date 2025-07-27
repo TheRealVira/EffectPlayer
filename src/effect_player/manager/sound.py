@@ -62,8 +62,13 @@ class SoundManager(ttk.LabelFrame):
         self.s_volume.set(100)
         self.s_volume.grid(row=0, column=0, sticky="NEWS")
 
-        # Sound selection listbox
-        self.tree = ttk.Treeview(self, selectmode="browse", show="tree")
+        # Sound selection listbox with macro column
+        self.tree = ttk.Treeview(
+            self, selectmode="browse", columns=("macro",), show="tree headings"
+        )
+        self.tree.heading("#0", text="Sound")
+        self.tree.heading("macro", text="Macro")
+        self.tree.column("macro", width=80, anchor="center")
         self.tree.bind("<<TreeviewSelect>>", self.selection_event_handler)
         self.tree.bind("<Control-Button-1>", self.macro_change)
         self.tree.grid(column=0, row=1, sticky="NEWS")
@@ -74,6 +79,18 @@ class SoundManager(ttk.LabelFrame):
         )
         self.tree.configure(yscroll=self.scrollbar.set)
         self.scrollbar.grid(column=1, row=1, sticky="NS")
+
+        # Set tag styles
+        self.tree.tag_configure("evenrow", background="#f0f0ff")
+        self.tree.tag_configure("oddrow", background="#ffffff")
+        self.tree.tag_configure(
+            "macroset", foreground="#0057b7", font=("TkDefaultFont", 10, "bold")
+        )
+
+        # Treeview style configuration
+        style = ttk.Style(self)
+        style.configure("Treeview", rowheight=28, font=("Segoe UI", 11))
+        style.configure("Treeview.Heading", font=("Segoe UI", 12, "bold"))
 
     @property
     def channel(self) -> int:
@@ -99,28 +116,57 @@ class SoundManager(ttk.LabelFrame):
             pre_load (bool): true: Pre-Loads music; false: Skips pre-loading.
         """
         self.entities = []
-        for filename in sorted(os.listdir(self.contentfolder_entity.folder)):
+        self.tree.delete(*self.tree.get_children())  # Clear existing entries
+        for idx, filename in enumerate(
+            sorted(os.listdir(self.contentfolder_entity.folder))
+        ):
             if not filename.endswith(".gitignore"):
                 new_entity = SoundEntity(
                     os.path.join(self.contentfolder_entity.folder, filename), pre_load
                 )
                 self.entities.append(new_entity)
+                macro = new_entity.get_macro() or ""
+                tag = "evenrow" if idx % 2 == 0 else "oddrow"
                 self.tree.insert(
-                    "", tk.END, new_entity.display, text=new_entity.display
+                    "",
+                    tk.END,
+                    new_entity.display,
+                    text=new_entity.display,
+                    values=(macro,),
+                    tags=(tag,),
                 )
 
-    def macro_change(self, _: None) -> None:
+    def macro_change(self, _) -> str:
         """Updates macro for specific content selection.
 
-        Args:
-            _ (None): Unused event parameter required by ttk.
+        Returns:
+            str: "break" to prevent further event propagation.
         """
         if self.tree.focus():
             selection = self.get_entity_from_string(self.tree.focus())
             if selection:
                 new_macro = MacroPrompt()
-                new_macro.subscribe(selection.set_macro)
+                new_macro.subscribe(
+                    lambda macro: self.set_macro_and_update(selection, macro)
+                )
                 new_macro.ask(selection.display)
+        return "break"
+
+    def set_macro_and_update(self, selection, macro):
+        """Set macro on entity and update the UI."""
+        if isinstance(macro, int):
+            if 32 <= macro <= 126:
+                macro_str = chr(macro)
+            else:
+                macro_str = str(macro)
+        else:
+            macro_str = str(macro)
+        selection.set_macro(macro)
+        self.tree.set(selection.display, "macro", macro_str or "")
+        if macro_str:
+            self.tree.item(selection.display, tags=("macroset",))
+        else:
+            self.tree.item(selection.display, tags=())
 
     def macro_focus(self, macro: str) -> None:
         """Select and focus on content based macros.
@@ -144,7 +190,13 @@ class SoundManager(ttk.LabelFrame):
         if self.tree.selection():
             selection = self.get_entity_from_string(self.tree.focus())
             if selection:
-                selection.play(self.player_entity.channel, self.player_entity.loops)
+                if self.player_entity.loops != 0:
+                    selection.play(self.player_entity.channel, self.player_entity.loops)
+                else:
+                    channel = pygame.mixer.find_channel()
+                    if channel:
+                        channel.set_volume(self.get_volume())
+                        channel.play(selection.sound)
 
     def get_entity_from_string(self, entity_name: str) -> SoundEntity:
         """Tries to fetch Soundentity from content list based on the entities name.

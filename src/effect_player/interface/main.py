@@ -1,5 +1,8 @@
 """A nice effect player for some digital DnD 🐉🎲
 """
+import ctypes
+import sys
+import tkinter as tk
 import webbrowser
 from tkinter import ttk
 from ttkthemes import ThemedTk
@@ -34,7 +37,14 @@ class MainWindow(ThemedTk):
 
         ttk.Label(
             self, font=CONFIG["default"]["HEADER_FONT"], text="EffectPlayer"
-        ).grid(row=self.get_row(), columnspan=3, sticky="")
+        ).grid(
+            row=self.get_row(), columnspan=3, sticky="", pady=(10, 10)
+        )  # Add vertical padding
+
+        # Add a separator for visual clarity
+        ttk.Separator(self, orient="horizontal").grid(
+            row=self.get_row(), columnspan=3, sticky="ew", pady=(0, 10)
+        )
 
         effect_manager = SoundManager(
             frame=self,
@@ -50,6 +60,9 @@ class MainWindow(ThemedTk):
         effect_manager.insert_sound(CONFIG.getboolean("default", "PRE_LOAD_EFFECTS"))
         self.sound_managers.append(effect_manager)
 
+        # Add a little space between managers
+        ttk.Label(self, text="").grid(row=self.get_row(), columnspan=3, pady=(5, 5))
+
         music_manager = SoundManager(
             frame=self,
             interface_entity=InterfaceEntity(
@@ -64,13 +77,30 @@ class MainWindow(ThemedTk):
         music_manager.insert_sound(CONFIG.getboolean("default", "PRE_LOAD_MUSIC"))
         self.sound_managers.append(music_manager)
 
-        ttk.Button(self, text="STOP", command=self.stop_everything).grid(
+        # Add a separator above the STOP button
+        ttk.Separator(self, orient="horizontal").grid(
+            row=self.get_row(), columnspan=3, sticky="ew", pady=(10, 5)
+        )
+
+        stop_btn = tk.Button(
+            self,
+            text="STOP",
+            command=self.stop_everything,
+            bg="#d9534f",
+            fg="white",
+            font=CONFIG["default"]["HEADER_FONT"],
+            activebackground="#c9302c",
+            activeforeground="white",
+            relief="raised",
+        )
+        stop_btn.grid(
             row=self.get_row(),
             columnspan=2,
             sticky="EWS",
             padx=CONFIG["default"]["PAD_X"],
             pady=CONFIG["default"]["PAD_Y"],
         )
+
         footer = ttk.Label(
             self,
             font=CONFIG["default"]["FOOTER_FONT"],
@@ -90,6 +120,12 @@ class MainWindow(ThemedTk):
             padx=CONFIG["default"]["PAD_X"],
             pady=CONFIG["default"]["PAD_Y"],
         )
+
+        if sys.platform == "win32":
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                "effectplayer"
+            )
+            self.iconbitmap("icon.ico")
 
     @property
     def is_done(self) -> bool:
