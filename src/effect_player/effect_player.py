@@ -6,9 +6,9 @@ with contextlib.redirect_stdout(None):
     import pygame
 import pygame.midi
 
-from effect_player.interface.main import MainWindow
-from effect_player.manager.midi import MidiManager
-from effect_player.manager.config import CONFIG
+from interface.main import MainWindow
+from manager.midi import MidiManager
+from manager.config import CONFIG
 
 midi_event_handlers = []
 

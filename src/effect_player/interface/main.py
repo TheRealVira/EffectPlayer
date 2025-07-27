@@ -6,12 +6,12 @@ import tkinter as tk
 import webbrowser
 from tkinter import ttk
 from ttkthemes import ThemedTk
-from effect_player.manager.sound import SoundManager
-from effect_player.manager.midi import MidiManager
-from effect_player.manager.config import CONFIG
-from effect_player.entity.contentfolder import ContentfolderEntity
-from effect_player.entity.interface import InterfaceEntity
-from effect_player.entity.player import PlayerEntity
+from manager.sound import SoundManager
+from manager.midi import MidiManager
+from manager.config import CONFIG
+from entity.contentfolder import ContentfolderEntity
+from entity.interface import InterfaceEntity
+from entity.player import PlayerEntity
 
 
 class MainWindow(ThemedTk):

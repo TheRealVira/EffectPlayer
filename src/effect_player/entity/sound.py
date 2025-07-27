@@ -2,7 +2,7 @@
 
 from pathlib import Path
 import pygame
-from effect_player.manager.config import CONFIG
+from manager.config import CONFIG
 
 
 class SoundEntity:

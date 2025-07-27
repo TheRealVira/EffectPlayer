@@ -2,8 +2,8 @@
 
 import tkinter as tk
 from tkinter import ttk
-from effect_player.manager.midi import MidiManager
-from effect_player.manager.config import CONFIG
+from manager.midi import MidiManager
+from manager.config import CONFIG
 
 
 class MacroPrompt(tk.Toplevel):
