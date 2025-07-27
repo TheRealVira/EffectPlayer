@@ -18,6 +18,7 @@ def get_default_midi_input():
     try:
         default_id = pygame.midi.get_default_input_id()
         if default_id != -1:
+            print(f"Using default MIDI input device ID: {default_id}")
             return pygame.midi.Input(default_id)
     except pygame.midi.MidiException:
         pass

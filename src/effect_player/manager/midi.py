@@ -26,9 +26,11 @@ class MidiManager:
     """Manages MIDI input and events."""
 
     observers = defaultdict(list)
+    _instances = []
 
     def __init__(self, midi_input) -> None:
         self.midi_input = midi_input
+        MidiManager._instances.append(self)
 
     @classmethod
     def subscribe(cls, function) -> None:
@@ -46,6 +48,12 @@ class MidiManager:
         """Manually notify all observers of a keypress (for keyboard integration)."""
         for function in cls.observers["Keypress"]:
             function(KeyCodeEvent(keycode))
+
+    @classmethod
+    def update_all(cls):
+        """Update all instances of MidiManager."""
+        for instance in cls._instances:
+            instance.update()
 
     def update(self) -> None:
         """Update Midi Manager."""

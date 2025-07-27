@@ -63,6 +63,7 @@ class MacroPrompt(tk.Toplevel):
         self.lift()
         self.focus_force()
         self.grab_set()
+        self.poll_midi()
 
     def keyboard_event(self, event) -> None:
         """Eventhandler for keyboard and MIDI macros."""
@@ -91,3 +92,8 @@ class MacroPrompt(tk.Toplevel):
         """Make sure to clean up."""
         MidiManager.unsubscribe(self.keyboard_event)
         self.destroy()
+
+    def poll_midi(self):
+        """Poll MIDI events while the macro prompt is open."""
+        MidiManager.update_all()
+        self.after(20, self.poll_midi)
